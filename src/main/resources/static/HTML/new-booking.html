@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Booking — CarService</title>
+    <link rel="stylesheet" href="../CSS/new-booking.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+<!-- ═══════════════════════ SIDEBAR ═══════════════════════ -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-icon">
+            <i class="fa-solid fa-car-side"></i>
+        </div>
+        <span class="logo-text">CarService</span>
+        <span class="logo-sub">My Account</span>
+    </div>
+
+    <nav class="sidebar-nav">
+        <a href="#" class="nav-item">
+            <i class="fa-solid fa-grid"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fa-solid fa-car"></i>
+            <span>My Vehicles</span>
+        </a>
+        <a href="index.html" class="nav-item active">
+            <i class="fa-solid fa-calendar"></i>
+            <span>My Bookings</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fa-solid fa-clock"></i>
+            <span>Service History</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i class="fa-solid fa-star"></i>
+            <span>Reviews</span>
+        </a>
+    </nav>
+
+    <button class="sidebar-collapse" onclick="toggleSidebar()">
+        <div class="collapse-left">
+            <i class="fa-solid fa-chevron-left" id="collapseIcon"></i>
+            <span>Collapse</span>
+        </div>
+        <div class="collapse-avatar">K</div>
+    </button>
+</aside>
+
+<!-- ═══════════════════════ MAIN ═══════════════════════ -->
+<main class="main-content" id="mainContent">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+        <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Search your vehicles, bookings...">
+        </div>
+        <div class="topbar-right">
+            <button class="notif-btn">
+                <i class="fa-solid fa-bell"></i>
+                <span class="notif-badge">2</span>
+            </button>
+            <div class="user-info">
+                <div class="user-text">
+                    <span class="user-name">Kaviska Pathum</span>
+                    <span class="user-role">Customer</span>
+                </div>
+                <div class="user-avatar">👤</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- PAGE CONTENT -->
+    <div class="page-body">
+        <div class="page-body-inner">
+
+            <!-- PAGE HEADER -->
+            <div class="page-header">
+                <a href="index.html" class="back-link">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    Back to Bookings
+                </a>
+                <h1 class="page-title">New Booking</h1>
+                <p class="page-sub">Schedule a new service appointment for your vehicle</p>
+            </div>
+
+            <!-- STEPPER -->
+            <div class="stepper" id="stepper">
+                <div class="step active" data-step="1">
+                    <div class="step-circle">
+                        <i class="fa-solid fa-car"></i>
+                        <span class="step-num">1</span>
+                    </div>
+                    <div class="step-info">
+                        <span class="step-label">Step 1</span>
+                        <span class="step-name">Vehicle</span>
+                    </div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step" data-step="2">
+                    <div class="step-circle">
+                        <i class="fa-solid fa-wrench"></i>
+                        <span class="step-num">2</span>
+                    </div>
+                    <div class="step-info">
+                        <span class="step-label">Step 2</span>
+                        <span class="step-name">Services</span>
+                    </div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step" data-step="3">
+                    <div class="step-circle">
+                        <i class="fa-solid fa-calendar"></i>
+                        <span class="step-num">3</span>
+                    </div>
+                    <div class="step-info">
+                        <span class="step-label">Step 3</span>
+                        <span class="step-name">Schedule</span>
+                    </div>
+                </div>
+                <div class="step-line"></div>
+                <div class="step" data-step="4">
+                    <div class="step-circle">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span class="step-num">4</span>
+                    </div>
+                    <div class="step-info">
+                        <span class="step-label">Step 4</span>
+                        <span class="step-name">Confirm</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FORM GRID -->
+            <div class="form-grid">
+
+                <!-- LEFT: STEP PANELS -->
+                <div class="form-panels">
+
+                    <!-- STEP 1: Vehicle -->
+                    <div class="panel active" id="panel-1">
+                        <div class="panel-header">
+                            <h2>Select Your Vehicle</h2>
+                            <p>Choose which vehicle needs servicing</p>
+                        </div>
+                        <div class="vehicle-list" id="vehicleList">
+                            <div class="vehicle-card selected" data-vehicle="1" onclick="selectVehicle(this, 'Toyota Camry', 'ABC-1234', '2021')">
+                                <div class="vehicle-icon">
+                                    <i class="fa-solid fa-car-side"></i>
+                                </div>
+                                <div class="vehicle-details">
+                                    <span class="vehicle-name">Toyota Camry</span>
+                                    <span class="vehicle-meta">ABC-1234 &nbsp;·&nbsp; 2021</span>
+                                </div>
+                                <div class="vehicle-check">
+                                    <i class="fa-solid fa-check"></i>
+                                </div>
+                            </div>
+                            <div class="vehicle-card" data-vehicle="2" onclick="selectVehicle(this, 'Honda Civic', 'XYZ-5678', '2019')">
+                                <div class="vehicle-icon">
+                                    <i class="fa-solid fa-car-side"></i>
+                                </div>
+                                <div class="vehicle-details">
+                                    <span class="vehicle-name">Honda Civic</span>
+                                    <span class="vehicle-meta">XYZ-5678 &nbsp;·&nbsp; 2019</span>
+                                </div>
+                                <div class="vehicle-check">
+                                    <i class="fa-solid fa-check"></i>
+                                </div>
+                            </div>
+                            <button class="add-vehicle-btn">
+                                <i class="fa-solid fa-plus"></i>
+                                Add a New Vehicle
+                            </button>
+                        </div>
+
+                        <div class="panel-field">
+                            <label class="field-label">Special Notes (optional)</label>
+                            <textarea class="field-input" id="vehicleNotes" rows="3" placeholder="Describe any symptoms or special instructions..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: Services -->
+                    <div class="panel" id="panel-2">
+                        <div class="panel-header">
+                            <h2>Select Services</h2>
+                            <p>You can select multiple services</p>
+                        </div>
+                        <div class="service-categories">
+                            <button class="cat-pill active" onclick="filterServices(this,'all')">All</button>
+                            <button class="cat-pill" onclick="filterServices(this,'maintenance')">Maintenance</button>
+                            <button class="cat-pill" onclick="filterServices(this,'repair')">Repair</button>
+                            <button class="cat-pill" onclick="filterServices(this,'inspection')">Inspection</button>
+                        </div>
+                        <div class="service-grid" id="serviceGrid">
+                            <div class="service-card" data-cat="maintenance" data-id="1" data-name="Oil &amp; Filter Change" data-price="3500" onclick="toggleService(this)">
+                                <div class="service-icon maintenance">
+                                    <i class="fa-solid fa-oil-can"></i>
+                                </div>
+                                <div class="service-info">
+                                    <span class="service-name">Oil &amp; Filter Change</span>
+                                    <span class="service-duration">~1 hour</span>
+                                </div>
+                                <div class="service-price">LKR 3,500</div>
+                                <div class="service-check-box"></div>
+                            </div>
+                            <div class="service-card" data-cat="inspection" data-id="2" data-name="Full Vehicle Inspection" data-price="5000" onclick="toggleService(this)">
+                                <div class="service-icon inspection">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </div>
+                                <div class="service-info">
+                                    <span class="service-name">Full Inspection</span>
+                                    <span class="service-duration">~2 hours</span>
+                                </div>
+                                <div class="service-price">LKR 5,000</div>
+                                <div class="service-check-box"></div>
+                            </div>
+                            <div class="service-card" data-cat="repair" data-id="3" data-name="Brake Pad Replacement" data-price="8000" onclick="toggleService(this)">
+                                <div class="service-icon repair">
+                                    <i class="fa-solid fa-circle-dot"></i>
+                                </div>
+                                <div class="service-info">
+                                    <span class="service-name">Brake Pad Replacement</span>
+                                    <span class="service-duration">~1.5 hours</span>
+                                </div>
+                                <div class="service-price">LKR 8,000</div>
+                                <div class="service-check-box"></div>
+                            </div>
+                            <div class="service-card" data-cat="maintenance" data-id="4" data-name="AC Gas Refill" data-price="6500" onclick="toggleService(this)">
+                                <div class="service-icon maintenance">
+                                    <i class="fa-solid fa-snowflake"></i>
+                                </div>
+                                <div class="service-info">
+                                    <span class="service-name">AC Gas Refill &amp; Service</span>
+                                    <span class="service-duration">~1.5 hours</span>
+                                </div>
+                                <div class="service-price">LKR 6,500</div>
+                                <div class="service-check-box"></div>
+                            </div>
+                            <div class="service-card" data-cat="maintenance" data-id="5" data-name="Wheel Alignment" data-price="4500" onclick="toggleService(this)">
+                                <div class="service-icon maintenance">
+                                    <i class="fa-solid fa-rotate"></i>
+                                </div>
+                                <div class="service-info">
+                                    <span class="service-name">Wheel Alignment &amp; Balance</span>
+                                    <span class="service-duration">~1 hour</span>
+                                </div>
+                                <div class="service-price">LKR 4,500</div>
+                                <div class="service-check-box"></div>
+                            </div>
+                            <div class="service-card" data-cat="repair" data-id="6" data-name="Battery Replacement" data-price="2000" onclick="toggleService(this)">
+                                <div class="service-icon repair">
+                                    <i class="fa-solid fa-battery-full"></i>
+                                </div>
+                                <div class="service-info">
+                                    <span class="service-name">Battery Replacement</span>
+                                    <span class="service-duration">~30 min</span>
+                                </div>
+                                <div class="service-price">LKR 2,000</div>
+                                <div class="service-check-box"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Schedule -->
+                    <div class="panel" id="panel-3">
+                        <div class="panel-header">
+                            <h2>Schedule Appointment</h2>
+                            <p>Choose your preferred date and time slot</p>
+                        </div>
+
+                        <div class="schedule-grid">
+                            <div class="panel-field">
+                                <label class="field-label">Preferred Date</label>
+                                <input type="date" class="field-input" id="bookingDate" min="">
+                            </div>
+                            <div class="panel-field">
+                                <label class="field-label">Drop-off Time</label>
+                                <select class="field-input" id="bookingTime">
+                                    <option value="">— Select a slot —</option>
+                                    <option>08:00 AM</option>
+                                    <option>09:00 AM</option>
+                                    <option>10:00 AM</option>
+                                    <option>11:00 AM</option>
+                                    <option>01:00 PM</option>
+                                    <option>02:00 PM</option>
+                                    <option>03:00 PM</option>
+                                    <option>04:00 PM</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="panel-field" style="margin-top:1.25rem">
+                            <label class="field-label">Quick Slots</label>
+                            <div class="time-slots" id="timeSlots">
+                                <button class="time-slot" onclick="selectSlot(this,'08:00 AM')">08:00 AM</button>
+                                <button class="time-slot" onclick="selectSlot(this,'09:00 AM')">09:00 AM</button>
+                                <button class="time-slot booked" disabled>10:00 AM</button>
+                                <button class="time-slot" onclick="selectSlot(this,'11:00 AM')">11:00 AM</button>
+                                <button class="time-slot booked" disabled>01:00 PM</button>
+                                <button class="time-slot" onclick="selectSlot(this,'02:00 PM')">02:00 PM</button>
+                                <button class="time-slot" onclick="selectSlot(this,'03:00 PM')">03:00 PM</button>
+                                <button class="time-slot" onclick="selectSlot(this,'04:00 PM')">04:00 PM</button>
+                            </div>
+                            <p class="slot-legend">
+                                <span class="dot booked"></span> Booked &nbsp;&nbsp;
+                                <span class="dot available"></span> Available &nbsp;&nbsp;
+                                <span class="dot selected"></span> Selected
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4: Confirm -->
+                    <div class="panel" id="panel-4">
+                        <div class="panel-header">
+                            <h2>Confirm Booking</h2>
+                            <p>Review your appointment details before confirming</p>
+                        </div>
+
+                        <div class="confirm-section">
+                            <div class="confirm-block">
+                                <h3 class="confirm-block-title">
+                                    <i class="fa-solid fa-car"></i>
+                                    Vehicle
+                                </h3>
+                                <p class="confirm-value" id="confirmVehicle">Toyota Camry — ABC-1234 (2021)</p>
+                            </div>
+                            <div class="confirm-block">
+                                <h3 class="confirm-block-title">
+                                    <i class="fa-solid fa-wrench"></i>
+                                    Services
+                                </h3>
+                                <ul class="confirm-service-list" id="confirmServices">
+                                    <li class="confirm-none">No services selected</li>
+                                </ul>
+                            </div>
+                            <div class="confirm-block">
+                                <h3 class="confirm-block-title">
+                                    <i class="fa-solid fa-calendar"></i>
+                                    Schedule
+                                </h3>
+                                <p class="confirm-value" id="confirmSchedule">Not selected</p>
+                            </div>
+                            <div class="confirm-block">
+                                <h3 class="confirm-block-title">
+                                    <i class="fa-solid fa-credit-card"></i>
+                                    Payment Method
+                                </h3>
+                                <div class="payment-options">
+                                    <label class="pay-option">
+                                        <input type="radio" name="payment" value="card" checked>
+                                        <div class="pay-option-box">
+                                            <i class="fa-solid fa-credit-card"></i>
+                                            Credit / Debit Card
+                                        </div>
+                                    </label>
+                                    <label class="pay-option">
+                                        <input type="radio" name="payment" value="cash">
+                                        <div class="pay-option-box">
+                                            <i class="fa-solid fa-money-bill"></i>
+                                            Pay at Counter
+                                        </div>
+                                    </label>
+                                    <label class="pay-option">
+                                        <input type="radio" name="payment" value="online">
+                                        <div class="pay-option-box">
+                                            <i class="fa-solid fa-wallet"></i>
+                                            Online Wallet
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NAVIGATION BUTTONS -->
+                    <div class="panel-nav">
+                        <button class="btn-secondary" id="prevBtn" onclick="prevStep()" style="display:none">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            Previous
+                        </button>
+                        <button class="btn-primary" id="nextBtn" onclick="nextStep()">
+                            Continue
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- RIGHT: ORDER SUMMARY -->
+                <aside class="order-summary">
+                    <div class="summary-card">
+                        <h3 class="summary-title">Booking Summary</h3>
+
+                        <div class="summary-block">
+                            <div class="summary-row">
+                                <span class="s-label">Vehicle</span>
+                                <span class="s-value" id="sumVehicle">Toyota Camry</span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="s-label">Plate</span>
+                                <span class="s-value" id="sumPlate">ABC-1234</span>
+                            </div>
+                        </div>
+
+                        <div class="summary-divider"></div>
+
+                        <div class="summary-block">
+                            <p class="s-label" style="margin-bottom:.6rem">Selected Services</p>
+                            <div id="sumServicesList" class="sum-services-list">
+                                <p class="sum-empty">No services selected yet</p>
+                            </div>
+                        </div>
+
+                        <div class="summary-divider"></div>
+
+                        <div class="summary-block">
+                            <div class="summary-row">
+                                <span class="s-label">Date</span>
+                                <span class="s-value" id="sumDate">—</span>
+                            </div>
+                            <div class="summary-row">
+                                <span class="s-label">Time</span>
+                                <span class="s-value" id="sumTime">—</span>
+                            </div>
+                        </div>
+
+                        <div class="summary-divider"></div>
+
+                        <div class="summary-total-row">
+                            <span>Total Estimate</span>
+                            <span class="summary-total" id="sumTotal">LKR 0</span>
+                        </div>
+
+                        <div class="summary-note">
+                            <i class="fa-solid fa-circle-info"></i>
+                            Final amount may vary based on actual service requirements.
+                        </div>
+                    </div>
+                </aside>
+
+            </div><!-- /form-grid -->
+
+            <!-- SUCCESS OVERLAY -->
+            <div class="success-overlay" id="successOverlay">
+                <div class="success-card">
+                    <div class="success-icon">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <h2>Booking Confirmed!</h2>
+                    <p>Your appointment has been successfully scheduled. You'll receive a confirmation shortly.</p>
+                    <div class="success-ref" id="successRef">BK-20250423-0004</div>
+                    <div class="success-actions">
+                        <button class="btn-secondary" onclick="closeSuccess()">New Booking</button>
+                        <a href="index.html" class="btn-primary">
+                            View My Bookings
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /page-body-inner -->
+    </div><!-- /page-body -->
+</main>
+
+<script src="../JS/new-booking.js"></script>
+</body>
+</html>
