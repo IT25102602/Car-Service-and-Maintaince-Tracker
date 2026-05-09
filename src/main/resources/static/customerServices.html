@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarService - Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', system-ui, sans-serif; }
+        .sidebar { background-color: #1e2937; }
+        .service-row:hover { background-color: #334155; }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-100">
+
+<div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <div class="w-64 sidebar flex flex-col">
+        <div class="p-6 border-b border-gray-700">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-car text-blue-500 text-3xl"></i>
+                <h1 class="text-2xl font-bold">CarService</h1>
+            </div>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-1">
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-700 text-gray-300">
+                <i class="fa-solid fa-house"></i> Dashboard
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-700 text-gray-300">
+                <i class="fa-solid fa-users"></i> Customers
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-700 text-gray-300">
+                <i class="fa-solid fa-car"></i> Vehicles
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 bg-gray-700 rounded-lg font-medium">
+                <i class="fa-solid fa-wrench"></i> Services
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-700 text-gray-300">
+                <i class="fa-solid fa-calendar"></i> Bookings
+            </a>
+            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-700 text-gray-300">
+                <i class="fa-solid fa-history"></i> History
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+        <header class="bg-gray-900 px-8 py-6 border-b border-gray-700">
+            <h2 class="text-3xl font-semibold">Service Catalog</h2>
+            <p class="text-gray-400 mt-1">Browse our professional car services</p>
+        </header>
+
+        <div class="p-8">
+            <!-- Search Bar -->
+            <div class="mb-6">
+                <input type="text" id="searchInput"
+                       placeholder="Search services..."
+                       class="w-full bg-gray-800 border border-gray-700 rounded-xl px-5 py-4 focus:outline-none focus:border-blue-500 text-lg"
+                       onkeyup="filterServices()">
+            </div>
+
+            <!-- Services Table -->
+            <div class="bg-gray-900 rounded-2xl overflow-hidden border border-gray-700">
+                <table class="w-full">
+                    <thead>
+                    <tr class="bg-gray-800 text-gray-300">
+                        <th class="p-5 text-left">Service</th>
+                        <th class="p-5 text-left">Description</th>
+                        <th class="p-5 text-left">Duration</th>
+                        <th class="p-5 text-left">Price (LKR)</th>
+                        <th class="p-5 text-left">Category</th>
+                        <th class="p-5 text-center">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody id="serviceTable" class="divide-y divide-gray-700"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Services Data
+    let services = [
+      { id:1, name:"Oil Change", desc:"Full synthetic oil change with filter", duration:"30 min", price:12000, category:"Maintenance" },
+      { id:2, name:"Brake Inspection", desc:"Complete brake system Inspection", duration:"45 min", price:25000, category:"Inspection" },
+      { id:3, name:"Brake Repair", desc:"Brake pad replacement and rotor resurfacing", duration:"2 hrs", price:3000, category:"Repair" },
+      { id:4, name:"Tire Rotation", desc:"Rotate all four tires for even wear", duration:"20 min", price:3500, category:"Maintenance" },
+      { id:5, name:"Engine Diagnostic", desc:"Full computer diagnostic scan", duration:"1 hr", price:8000, category:"Inspection" },
+      { id:6, name:"AC Service", desc:"Air conditioning system service and recharge", duration:"1.5 hrs", price:18000, category:"Repair" },
+      { id:7, name:"Wheel Alignment", desc:"Four-wheel alignment service", duration:"1 hr", price:6000, category:"Maintenance" }
+    ];
+
+    function renderTable(data) {
+      const tbody = document.getElementById('serviceTable');
+      tbody.innerHTML = '';
+
+      data.forEach(service => {
+        const row = `
+          <tr class="service-row">
+            <td class="p-5 font-medium">${service.name}</td>
+            <td class="p-5 text-gray-400">${service.desc}</td>
+            <td class="p-5">${service.duration}</td>
+            <td class="p-5 font-semibold text-green-400">LKR ${service.price.toLocaleString()}</td>
+            <td class="p-5">
+              <span class="px-4 py-1 text-xs font-medium rounded-full bg-blue-600">${service.category}</span>
+            </td>
+            <td class="p-5 text-center">
+              <button onclick="bookService(${service.id}, '${service.name.replace(/'/g, "\\'")}')"
+                      class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl flex items-center gap-2 mx-auto transition">
+                <i class="fa-solid fa-book"></i>
+                <span>Book Now</span>
+              </button>
+            </td>
+          </tr>`;
+        tbody.innerHTML += row;
+      });
+    }
+
+    function filterServices() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = services.filter(s =>
+        s.name.toLowerCase().includes(query) ||
+        s.desc.toLowerCase().includes(query)
+      );
+      renderTable(filtered);
+    }
+
+    function bookService(id, name) {
+      console.log(`Booking service ID: ${id}, Name: ${name}`); // For debugging
+      alert(` Service Selected: ${name}\n\nID: ${id}\n\nBooking form will open here soon!`);
+
+      // Uncomment below line when you create booking.html
+      // window.location.href = `booking.html?serviceId=${id}`;
+    }
+
+    // Initial Load
+    renderTable(services);
+</script>
+
+</body>
+</html>
