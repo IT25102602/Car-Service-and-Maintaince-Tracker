@@ -19,7 +19,9 @@ public class ServiceController {
     }
 
     @GetMapping
-    public String listServices(Model model, @RequestParam(required = false) String search) {
+    public String listServices(Model model,
+                               @RequestParam(required = false) String search) {
+
         List<Service> services = repository.findAll();
 
         if (search != null && !search.isEmpty()) {
@@ -31,7 +33,8 @@ public class ServiceController {
 
         model.addAttribute("services", services);
         model.addAttribute("search", search);
-        return "services";
+
+        return "services";     // ← Must be "services" (not customer/services)
     }
 
     @GetMapping("/add")
@@ -60,5 +63,11 @@ public class ServiceController {
     public String deleteService(@PathVariable int id) {
         repository.delete(id);
         return "redirect:/services";
+    }
+    @GetMapping("/catalog")
+    public String customerServices(Model model) {
+        List<Service> services = repository.findAll();
+        model.addAttribute("services", services);
+        return "customer-services";   // ← This must match the filename
     }
 }
