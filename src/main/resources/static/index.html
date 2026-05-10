@@ -690,10 +690,90 @@
             <!-- ── ADMIN PANEL ── -->
             <div id="apage-adminpanel" class="hidden p-8">
                 <h1 class="text-2xl font-semibold mb-1">Admin Panel</h1>
-                <p class="text-slate-400 text-sm mb-8">System settings and administration</p>
-                <div class="bg-[#1E2937] rounded-2xl border border-slate-700/50 p-8 text-center text-slate-400">
-                    <i class="fa fa-shield-alt text-4xl mb-3 text-slate-600"></i>
-                    <p class="font-medium">Admin settings coming soon.</p>
+                <p class="text-slate-400 text-sm mb-8">Manage staff accounts and system admins</p>
+
+                <div class="grid grid-cols-2 gap-6 mb-8">
+                    <!-- Add Staff Card -->
+                    <div class="bg-[#1E2937] border border-slate-700/50 rounded-2xl p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 bg-blue-900/40 rounded-xl flex items-center justify-center">
+                                <i class="fa fa-user-tie text-blue-400"></i>
+                            </div>
+                            <div>
+                                <h2 class="font-semibold">Add Staff</h2>
+                                <p class="text-slate-400 text-xs">Create a new staff account</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <input id="staffName" type="text" placeholder="Full Name"
+                                   class="w-full bg-[#0F172A] border border-slate-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#14b8a6]">
+                            <input id="staffEmail" type="email" placeholder="Email (@gmail.com)"
+                                   class="w-full bg-[#0F172A] border border-slate-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#14b8a6]">
+                            <input id="staffPhone" type="tel" placeholder="Phone (10 digits)"
+                                   class="w-full bg-[#0F172A] border border-slate-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#14b8a6]">
+                            <input id="staffPassword" type="password" placeholder="Password (min 6 characters)"
+                                   class="w-full bg-[#0F172A] border border-slate-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#14b8a6]">
+                        </div>
+                        <div id="staffError" class="hidden mt-3 text-red-400 text-xs text-center bg-red-900/20 py-2 rounded-xl"></div>
+                        <div id="staffSuccess" class="hidden mt-3 text-green-400 text-xs text-center bg-green-900/20 py-2 rounded-xl"></div>
+                        <button onclick="addStaff()"
+                                class="w-full mt-4 bg-blue-600 hover:bg-blue-700 py-3 rounded-xl font-semibold text-sm transition-colors flex items-center justify-center gap-2">
+                            <i class="fa fa-plus"></i> Add Staff Account
+                        </button>
+                    </div>
+
+                    <!-- Add Admin Card -->
+                    <div class="bg-[#1E2937] border border-slate-700/50 rounded-2xl p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 bg-purple-900/40 rounded-xl flex items-center justify-center">
+                                <i class="fa fa-shield-alt text-purple-400"></i>
+                            </div>
+                            <div>
+                                <h2 class="font-semibold">Add Admin</h2>
+                                <p class="text-slate-400 text-xs">Create a new admin account</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <input id="newAdminName" type="text" placeholder="Full Name"
+                                   class="w-full bg-[#0F172A] border border-slate-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#14b8a6]">
+                            <input id="newAdminEmail" type="email" placeholder="Email (@gmail.com)"
+                                   class="w-full bg-[#0F172A] border border-slate-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#14b8a6]">
+                            <input id="newAdminPhone" type="tel" placeholder="Phone (10 digits)"
+                                   class="w-full bg-[#0F172A] border border-slate-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#14b8a6]">
+                            <input id="newAdminPassword" type="password" placeholder="Password (min 6 characters)"
+                                   class="w-full bg-[#0F172A] border border-slate-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#14b8a6]">
+                        </div>
+                        <div id="newAdminError" class="hidden mt-3 text-red-400 text-xs text-center bg-red-900/20 py-2 rounded-xl"></div>
+                        <div id="newAdminSuccess" class="hidden mt-3 text-green-400 text-xs text-center bg-green-900/20 py-2 rounded-xl"></div>
+                        <button onclick="addAdmin()"
+                                class="w-full mt-4 bg-purple-600 hover:bg-purple-700 py-3 rounded-xl font-semibold text-sm transition-colors flex items-center justify-center gap-2">
+                            <i class="fa fa-plus"></i> Add Admin Account
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Staff list -->
+                <div class="bg-[#1E2937] border border-slate-700/50 rounded-2xl overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-700 flex items-center justify-between">
+                        <h3 class="font-semibold text-sm">Staff & Admin Accounts</h3>
+                        <button onclick="loadStaffList()" class="text-xs text-[#14b8a6] hover:underline">
+                            <i class="fa fa-refresh mr-1"></i> Refresh
+                        </button>
+                    </div>
+                    <table class="w-full text-sm">
+                        <thead>
+                        <tr class="border-b border-slate-700 text-slate-400 text-xs uppercase tracking-wide">
+                            <th class="px-6 py-3 text-left font-medium">Name</th>
+                            <th class="px-6 py-3 text-left font-medium">Email</th>
+                            <th class="px-6 py-3 text-left font-medium">Phone</th>
+                            <th class="px-6 py-3 text-left font-medium">Role</th>
+                            <th class="px-6 py-3 text-right font-medium">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="staffTableBody">
+                        <tr><td colspan="5" class="px-6 py-8 text-center text-slate-500">Click Refresh to load staff list.</td></tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -901,12 +981,12 @@
             <button onclick="hideRegisterModal()" class="text-slate-400 hover:text-white text-2xl leading-none">&times;</button>
         </div>
 
-        <!-- Role Tabs -->
-        <div class="grid grid-cols-2 gap-3 mb-6">
-            <button onclick="selectRegisterRole('customer')" id="regCustomerTab"
-                    class="py-3 rounded-2xl border-2 border-[#14b8a6] bg-[#14b8a6]/10 font-medium text-sm">👤 Customer</button>
-            <button onclick="selectRegisterRole('admin')" id="regAdminTab"
-                    class="py-3 rounded-2xl border-2 border-transparent hover:border-slate-400 font-medium text-sm">🛡️ Admin / Staff</button>
+        <!-- Customer only registration -->
+        <div class="flex items-center gap-2 mb-6 px-1">
+            <div class="w-8 h-8 bg-[#14b8a6]/10 border border-[#14b8a6] rounded-xl flex items-center justify-center">
+                <i class="fa fa-user text-[#14b8a6] text-sm"></i>
+            </div>
+            <span class="text-sm font-medium text-[#14b8a6]">Customer Registration</span>
         </div>
 
         <div class="space-y-4">
@@ -1159,7 +1239,7 @@
         document.getElementById('profileModal').classList.add('hidden');
     }
 
-    // ── Update profile (BUG FIXED) ───────────────────────────────
+    // ── Update profile  ───────────────────────────────
     async function updateProfile() {
         if (!currentUserId) {
             alert('User ID not found. Please login again.');
@@ -1190,14 +1270,27 @@
             errBox.classList.remove('hidden');
             return;
         }
-
         if (!email) {
             errBox.textContent = 'Email cannot be empty.';
             errBox.classList.remove('hidden');
             return;
         }
+        if (!email.endsWith('@gmail.com')) {
+            errBox.textContent = 'Email must be a @gmail.com address.';
+            errBox.classList.remove('hidden');
+            return;
+        }
+        if (phone && !/^\d{10}$/.test(phone)) {
+            errBox.textContent = 'Phone number must be exactly 10 digits (e.g. 0771234567).';
+            errBox.classList.remove('hidden');
+            return;
+        }
+        if (password && password.length < 6) {
+            errBox.textContent = 'New password must be at least 6 characters.';
+            errBox.classList.remove('hidden');
+            return;
+        }
 
-        // FIXED: Always send the full object including name and email
         // Spring Boot's @RequestBody Customer needs the full object,
         // otherwise null fields overwrite existing data unpredictably.
         const updateData = {
@@ -1234,9 +1327,10 @@
                     hideProfileModal();
                 }, 1500);
             } else {
-                const errText = await res.text();
-                console.error('Update failed:', errText);
-                errBox.textContent = '❌ Failed to update profile. Please try again.';
+                const errData = await res.json().catch(() => null);
+                const msg = errData?.message || 'Failed to update profile. Please try again.';
+                console.error('Update failed:', msg);
+                errBox.textContent = '❌ ' + msg;
                 errBox.classList.remove('hidden');
             }
         } catch (e) {
@@ -1301,7 +1395,7 @@
         document.getElementById('regAddressField').classList.toggle('hidden', !isCustomer);
     }
 
-    // ── Register user (BUG FIXED) ────────────────────────────────
+    // ── Register user ────────────────────────────────
     async function registerUser() {
         const name            = document.getElementById('regName').value.trim();
         const email           = document.getElementById('regEmail').value.trim();
@@ -1317,20 +1411,38 @@
         successBox.classList.add('hidden');
 
         // Validate inputs
-        if (!name || !email || !password) {
-            errBox.textContent = 'Name, email, and password are required.';
+        if (!name) {
+            errBox.textContent = 'Full name is required.';
             errBox.classList.remove('hidden');
             return;
         }
-
-        if (password !== confirmPassword) {
-            errBox.textContent = 'Passwords do not match.';
+        if (!email) {
+            errBox.textContent = 'Email address is required.';
             errBox.classList.remove('hidden');
             return;
         }
-
+        if (!email.endsWith('@gmail.com')) {
+            errBox.textContent = 'Email must be a @gmail.com address.';
+            errBox.classList.remove('hidden');
+            return;
+        }
+        if (phone && !/^\d{10}$/.test(phone)) {
+            errBox.textContent = 'Phone number must be exactly 10 digits (e.g. 0771234567).';
+            errBox.classList.remove('hidden');
+            return;
+        }
+        if (!password) {
+            errBox.textContent = 'Password is required.';
+            errBox.classList.remove('hidden');
+            return;
+        }
         if (password.length < 6) {
             errBox.textContent = 'Password must be at least 6 characters.';
+            errBox.classList.remove('hidden');
+            return;
+        }
+        if (password !== confirmPassword) {
+            errBox.textContent = 'Passwords do not match.';
             errBox.classList.remove('hidden');
             return;
         }
@@ -1467,6 +1579,132 @@
         }
     });
 
+    // ── Add Staff ────────────────────────────────────────────────
+    async function addStaff() {
+        const name     = document.getElementById('staffName').value.trim();
+        const email    = document.getElementById('staffEmail').value.trim();
+        const phone    = document.getElementById('staffPhone').value.trim();
+        const password = document.getElementById('staffPassword').value.trim();
+        const errBox   = document.getElementById('staffError');
+        const okBox    = document.getElementById('staffSuccess');
+
+        errBox.classList.add('hidden');
+        okBox.classList.add('hidden');
+
+        if (!name) { errBox.textContent = 'Name is required.'; errBox.classList.remove('hidden'); return; }
+        if (!email) { errBox.textContent = 'Email is required.'; errBox.classList.remove('hidden'); return; }
+        if (!email.endsWith('@gmail.com')) { errBox.textContent = 'Email must be @gmail.com.'; errBox.classList.remove('hidden'); return; }
+        if (phone && !/^\d{10}$/.test(phone)) { errBox.textContent = 'Phone must be exactly 10 digits.'; errBox.classList.remove('hidden'); return; }
+        if (!password) { errBox.textContent = 'Password is required.'; errBox.classList.remove('hidden'); return; }
+        if (password.length < 6) { errBox.textContent = 'Password must be at least 6 characters.'; errBox.classList.remove('hidden'); return; }
+
+        try {
+            const res  = await fetch('/api/auth/register/staff', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, phone, password, role: 'STAFF' })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                okBox.textContent = '✅ Staff account created successfully!';
+                okBox.classList.remove('hidden');
+                ['staffName','staffEmail','staffPhone','staffPassword'].forEach(id => document.getElementById(id).value = '');
+                loadStaffList();
+            } else {
+                errBox.textContent = data.message || 'Failed to create staff account.';
+                errBox.classList.remove('hidden');
+            }
+        } catch (e) {
+            errBox.textContent = 'Error connecting to server.';
+            errBox.classList.remove('hidden');
+        }
+    }
+
+    // ── Add Admin ────────────────────────────────────────────────
+    async function addAdmin() {
+        const name     = document.getElementById('newAdminName').value.trim();
+        const email    = document.getElementById('newAdminEmail').value.trim();
+        const phone    = document.getElementById('newAdminPhone').value.trim();
+        const password = document.getElementById('newAdminPassword').value.trim();
+        const errBox   = document.getElementById('newAdminError');
+        const okBox    = document.getElementById('newAdminSuccess');
+
+        errBox.classList.add('hidden');
+        okBox.classList.add('hidden');
+
+        if (!name) { errBox.textContent = 'Name is required.'; errBox.classList.remove('hidden'); return; }
+        if (!email) { errBox.textContent = 'Email is required.'; errBox.classList.remove('hidden'); return; }
+        if (!email.endsWith('@gmail.com')) { errBox.textContent = 'Email must be @gmail.com.'; errBox.classList.remove('hidden'); return; }
+        if (phone && !/^\d{10}$/.test(phone)) { errBox.textContent = 'Phone must be exactly 10 digits.'; errBox.classList.remove('hidden'); return; }
+        if (!password) { errBox.textContent = 'Password is required.'; errBox.classList.remove('hidden'); return; }
+        if (password.length < 6) { errBox.textContent = 'Password must be at least 6 characters.'; errBox.classList.remove('hidden'); return; }
+
+        try {
+            const res  = await fetch('/api/auth/register/staff', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email, phone, password, role: 'ADMIN' })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                okBox.textContent = '✅ Admin account created successfully!';
+                okBox.classList.remove('hidden');
+                ['newAdminName','newAdminEmail','newAdminPhone','newAdminPassword'].forEach(id => document.getElementById(id).value = '');
+                loadStaffList();
+            } else {
+                errBox.textContent = data.message || 'Failed to create admin account.';
+                errBox.classList.remove('hidden');
+            }
+        } catch (e) {
+            errBox.textContent = 'Error connecting to server.';
+            errBox.classList.remove('hidden');
+        }
+    }
+
+    // ── Load Staff List ──────────────────────────────────────────
+    async function loadStaffList() {
+        const tbody = document.getElementById('staffTableBody');
+        tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-slate-500">Loading...</td></tr>';
+        try {
+            const res   = await fetch('/api/staff');
+            if (!res.ok) {
+                tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-slate-500">Staff API not available yet.</td></tr>';
+                return;
+            }
+            const staff = await res.json();
+            if (!staff.length) {
+                tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-slate-500">No staff accounts found.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = staff.map(s => `
+                <tr class="border-b border-slate-700/50 hover:bg-slate-800/40">
+                    <td class="px-6 py-4 font-medium">${s.name || '—'}</td>
+                    <td class="px-6 py-4 text-slate-400">${s.email || '—'}</td>
+                    <td class="px-6 py-4 text-slate-300">${s.phone || '—'}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 rounded-full text-xs font-medium ${s.role === 'ADMIN' ? 'bg-purple-900/40 text-purple-400 border border-purple-700/40' : 'bg-blue-900/40 text-blue-400 border border-blue-700/40'}">
+                            ${s.role || 'STAFF'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="deleteStaff(${s.id})" class="text-slate-400 hover:text-red-400"><i class="fa fa-trash text-sm"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        } catch (e) {
+            tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-slate-500">Staff API not available yet.</td></tr>';
+        }
+    }
+
+    async function deleteStaff(id) {
+        if (!confirm('Delete this staff account?')) return;
+        try {
+            const res = await fetch(`/api/staff/${id}`, { method: 'DELETE' });
+            if (res.ok) loadStaffList();
+            else alert('Failed to delete staff account.');
+        } catch (e) { alert('Error connecting to server.'); }
+    }
+
     // ── Admin navigation ─────────────────────────────────────────
     const adminPages = ['dashboard','customers','vehicles','services','bookings','adminpanel','history'];
 
@@ -1485,8 +1723,9 @@
             activeNav.classList.add('bg-[#14b8a6]', 'text-white');
             activeNav.classList.remove('hover:bg-slate-800');
         }
-        // Load customers from API when switching to customers tab
+        // Load data when switching tabs
         if (page === 'customers') loadAdminCustomers();
+        if (page === 'adminpanel') loadStaffList();
     }
 
     // ── Admin dropdown toggle ────────────────────────────────────

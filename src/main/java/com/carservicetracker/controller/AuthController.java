@@ -4,6 +4,7 @@ import com.carservicetracker.model.Customer;
 import com.carservicetracker.model.Staff;
 import com.carservicetracker.repository.CustomerRepository;
 import com.carservicetracker.repository.StaffRepository;
+import com.carservicetracker.service.CustomerService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,47 +25,63 @@ public class AuthController {
     @Autowired
     private StaffRepository staffRepository;
 
+    @Autowired
+    private CustomerService customerService;
+
     // ── Register Customer ────────────────────────────────────────
     @PostMapping("/register/customer")
     public ResponseEntity<?> registerCustomer(@RequestBody Customer customer) {
         Map<String, Object> response = new HashMap<>();
 
-        // FIX 1: Check if email already exists
+        // Check duplicate email
         if (customerRepository.findByEmail(customer.getEmail()).isPresent()) {
             response.put("success", false);
             response.put("message", "An account with this email already exists.");
             return ResponseEntity.badRequest().body(response);
         }
 
-        // FIX 2: Validate required fields are not empty
+        // Validate required fields
         if (customer.getName() == null || customer.getName().trim().isEmpty()) {
             response.put("success", false);
             response.put("message", "Name is required.");
             return ResponseEntity.badRequest().body(response);
         }
-
         if (customer.getEmail() == null || customer.getEmail().trim().isEmpty()) {
             response.put("success", false);
             response.put("message", "Email is required.");
             return ResponseEntity.badRequest().body(response);
         }
-
         if (customer.getPassword() == null || customer.getPassword().trim().isEmpty()) {
             response.put("success", false);
             response.put("message", "Password is required.");
             return ResponseEntity.badRequest().body(response);
         }
 
-        // FIX 3: Set createdAt timestamp so it never crashes on non-nullable column
-        customer.setCreatedAt(LocalDateTime.now());
+        // Email must be @gmail.com
+        if (!customer.getEmail().toLowerCase().endsWith("@gmail.com")) {
+            response.put("success", false);
+            response.put("message", "Email must be a @gmail.com address.");
+            return ResponseEntity.badRequest().body(response);
+        }
 
-        // Set default membership type if not provided
+        // Phone must be exactly 10 digits (if provided)
+        if (customer.getPhone() != null && !customer.getPhone().isEmpty()) {
+            if (!customer.getPhone().matches("\\d{10}")) {
+                response.put("success", false);
+                response.put("message", "Phone number must be exactly 10 digits.");
+                return ResponseEntity.badRequest().body(response);
+            }
+        }
+
+        // Set defaults
+        customer.setCreatedAt(LocalDateTime.now());
         if (customer.getMembershipType() == null || customer.getMembershipType().isEmpty()) {
             customer.setMembershipType("Regular");
         }
 
         try {
-            customerRepository.save(customer);
+            // saveCustomer() hashes the password automatically via BCrypt
+            customerService.saveCustomer(customer);
             response.put("success", true);
             response.put("message", "Customer registered successfully.");
             return ResponseEntity.ok(response);
@@ -80,7 +97,6 @@ public class AuthController {
     public ResponseEntity<?> registerStaff(@RequestBody Staff staff) {
         Map<String, Object> response = new HashMap<>();
 
-        // Check if email already exists
         if (staffRepository.findByEmail(staff.getEmail()).isPresent()) {
             response.put("success", false);
             response.put("message", "An account with this email already exists.");
@@ -108,7 +124,6 @@ public class AuthController {
 
         Map<String, Object> response = new HashMap<>();
 
-        // Validate input
         if (email == null || password == null || role == null) {
             response.put("success", false);
             response.put("message", "Email, password and role are required.");
@@ -118,10 +133,8 @@ public class AuthController {
         if ("customer".equals(role)) {
             Customer customer = customerRepository.findByEmail(email).orElse(null);
 
-            if (customer != null
-                    && customer.getPassword() != null
-                    && customer.getPassword().equals(password)) {
-
+            // Use BCrypt checkPassword — compares raw input against stored hash
+            if (customer != null && customerService.checkPassword(password, customer.getPassword())) {
                 session.setAttribute("user", customer);
                 session.setAttribute("role", "customer");
 
@@ -135,10 +148,8 @@ public class AuthController {
         } else if ("admin".equals(role)) {
             Staff staff = staffRepository.findByEmail(email).orElse(null);
 
-            if (staff != null
-                    && staff.getPassword() != null
+            if (staff != null && staff.getPassword() != null
                     && staff.getPassword().equals(password)) {
-
                 session.setAttribute("user", staff);
                 session.setAttribute("role", "admin");
 
@@ -161,6 +172,4 @@ public class AuthController {
         session.invalidate();
         return ResponseEntity.ok(Map.of("message", "Logged out successfully"));
     }
-
-
 }
