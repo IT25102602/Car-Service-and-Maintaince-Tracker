@@ -1513,7 +1513,7 @@
 
         // ── TEAMMATE DATA: try vehicle/booking APIs ───────────────
         // These will show real numbers automatically once your
-        // teammates finish their modules. Until then they show "—".
+        .
 
         tryLoadCount(
             `/api/vehicles/customer/${customerId}/count`,
@@ -1534,8 +1534,6 @@
         );
     }
 
-    // Tries to fetch a count from a teammate's API.
-    // If the API doesn't exist yet, silently keeps showing "—".
     async function tryLoadCount(url, countElementId, badgeElementId) {
         try {
             const res = await fetch(url);
@@ -1549,9 +1547,9 @@
                 badge.textContent = 'live';
                 badge.className = 'text-xs bg-green-900/40 text-green-400 px-2 py-1 rounded-full';
             }
-            // If res is not ok (404 = API not built yet), leave "—" as is
+
         } catch (e) {
-            // Network error or API not built — silently leave "—"
+
         }
     }
 
