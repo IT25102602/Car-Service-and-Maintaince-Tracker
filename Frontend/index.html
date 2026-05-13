@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Vehicles – CarService Tracker</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+
+<div class="bg-layer">
+  <div class="grid-lines"></div>
+  <div id="ptcls"></div>
+</div>
+
+<div class="layout">
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside>
+  <div class="logo-wrap">
+    <div class="logo-icon">🚗</div>
+    <div class="logo-text"><h1>CarService</h1><p>Vehicle Management</p></div>
+  </div>
+  <nav>
+    <div class="nav-item" onclick="go('index.html')"><i class="fa fa-home ni"></i> Dashboard</div>
+    <div class="nav-item active"><i class="fa fa-car ni"></i> My Vehicles <span class="nav-badge" id="navCount">0</span></div>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="api-status"><span class="api-dot" id="apiDot"></span><span id="apiLbl">Connecting…</span></div>
+    <div class="nav-item danger" onclick="logout()"><i class="fa fa-sign-out-alt ni"></i> Sign Out</div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+  <header>
+    <div class="srch">
+      <i class="fa fa-search"></i>
+      <input id="topSrch" type="text" placeholder="Search vehicles by model, VIN, plate…" oninput="filterVehicles()">
+    </div>
+    <div class="icon-btn"><i class="fa fa-bell"></i><span class="notif-dot" id="notifBadge">0</span></div>
+    <div class="user-pill">
+      <div class="avatar">👤</div>
+      <div><p class="un">Kaviska Pathum</p><p class="ur">Customer</p></div>
+      <i class="fa fa-chevron-down" style="font-size:9px;color:#475569;margin-left:3px"></i>
+    </div>
+  </header>
+
+  <div class="page-body">
+    <div class="left">
+
+      <!-- Page Header -->
+      <div class="ph">
+        <div>
+          <h1>My Vehicles</h1>
+          <p>Manage and track all your registered vehicles</p>
+        </div>
+        <button class="btn-add" onclick="openAddModal()">
+          <i class="fa fa-plus" style="font-size:11px"></i> Add Vehicle
+        </button>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats" id="statsRow">
+        <div class="sc"><div class="si t">🚗</div><div><div class="sn t" id="st-total">0</div><div class="sl">Total Vehicles</div><div class="ss">Registered</div></div></div>
+        <div class="sc"><div class="si a">🔧</div><div><div class="sn a" id="st-due">0</div><div class="sl">Needs Service</div><div class="ss">Require attention</div></div></div>
+        <div class="sc"><div class="si b">📅</div><div><div class="sn b" id="st-upcoming">0</div><div class="sl">Upcoming Services</div><div class="ss">In next 30 days</div></div></div>
+        <div class="sc"><div class="si g">✅</div><div><div class="sn g" id="st-done">0</div><div class="sl">Completed Services</div><div class="ss">All time</div></div></div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="fb">
+        <div class="fw"><i class="fa fa-search"></i>
+          <input class="fi" id="vSrch" type="text" placeholder="Search by model, VIN, plate…" oninput="filterVehicles()">
+        </div>
+        <select class="fi" id="tFilter" onchange="filterVehicles()" style="width:128px">
+          <option value="">🚗 All Types</option>
+          <option value="Car">Car</option>
+          <option value="Motorcycle">Motorcycle</option>
+          <option value="Truck">Truck</option>
+          <option value="Van">Van</option>
+        </select>
+        <select class="fi" id="sFilter" onchange="filterVehicles()" style="width:138px">
+          <option value="">🛡 All Status</option>
+          <option value="Active">Active</option>
+          <option value="Service Due">Service Due</option>
+        </select>
+        <div class="vbtns">
+          <button class="vb on" id="gbtn" onclick="setView('grid')" title="Grid View"><i class="fa fa-th-large"></i></button>
+          <button class="vb" id="lbtn" onclick="setView('list')" title="List View"><i class="fa fa-list"></i></button>
+        </div>
+      </div>
+
+      <!-- Grid View -->
+      <div class="vg" id="gv"></div>
+
+      <!-- List View -->
+      <div class="vl" id="lv"></div>
+
+      <!-- Empty State -->
+      <div class="empty-state" id="emptyState" style="display:none">
+        <div class="ei">🚗</div>
+        <p>No vehicles found. Add your first vehicle!</p>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pg" id="pgRow" style="display:none">
+        <button class="pgb" onclick="changePage(-1)"><i class="fa fa-chevron-left" style="font-size:10px"></i></button>
+        <span class="pgb on" id="pgLabel">1</span>
+        <button class="pgb" onclick="changePage(1)"><i class="fa fa-chevron-right" style="font-size:10px"></i></button>
+      </div>
+
+      <!-- Reminder Banner -->
+      <div class="rm" id="reminderBanner" style="display:none">
+        <div style="display:flex;align-items:center;gap:11px">
+          <span class="bicon">🔔</span>
+          <div>
+            <p style="font-size:10.5px;color:#475569;margin-bottom:2px">Reminder</p>
+            <p style="font-size:13px" id="reminderText"></p>
+          </div>
+        </div>
+        <button class="btn-add" style="font-size:12px;padding:8px 15px">Book Now</button>
+      </div>
+
+    </div><!-- /left -->
+
+    <!-- Right Panel -->
+    <div class="rp">
+      <!-- Quick Add -->
+      <div class="rc">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px">
+          <div style="width:32px;height:32px;background:rgba(20,184,166,.15);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px">🚗</div>
+          <div><h3>Quick Add Vehicle</h3><p class="sub">Add a new vehicle in minutes</p></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div><label class="fl">Vehicle Type</label>
+            <select class="fin" id="qa-type"><option>Car</option><option>Motorcycle</option><option>Truck</option><option>Van</option></select></div>
+          <div><label class="fl">Make</label>
+            <input class="fin" id="qa-make" placeholder="e.g. Toyota"></div>
+          <div><label class="fl">Model</label>
+            <input class="fin" id="qa-model" placeholder="e.g. Camry"></div>
+          <div class="g2">
+            <div><label class="fl">Year</label><input type="number" id="qa-year" placeholder="2024" class="fin"></div>
+            <div><label class="fl">Mileage (km)</label><input type="number" id="qa-mileage" placeholder="0" class="fin"></div>
+          </div>
+          <div><label class="fl">VIN</label><input type="text" id="qa-vin" placeholder="Vehicle Identification Number" class="fin" style="font-family:monospace"></div>
+          <div><label class="fl">License Plate</label><input type="text" id="qa-plate" placeholder="e.g. ABC-1234" class="fin"></div>
+          <button class="btn-s" onclick="quickAdd()">
+            <i class="fa fa-plus" style="font-size:11px"></i> Add Vehicle
+          </button>
+        </div>
+      </div>
+
+      <!-- AI Recommendation -->
+      <div class="rc">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:13px">
+          <h3>Smart Recommendation</h3><span class="aib">AI Powered</span>
+        </div>
+        <div class="recbox">
+          <span class="rfloat" id="recIcon">🚗</span>
+          <p style="font-size:10.5px;color:#475569;margin-bottom:3px" id="recSub">Loading…</p>
+          <p class="rs" id="recTitle">–</p>
+          <p style="font-size:11px;color:#64748b;margin:5px 0 12px" id="recBody"></p>
+          <button class="btn-s">View Service Packages</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ DELETE MODAL ═══ -->
+<div class="mo" id="dm">
+  <div class="mb">
+    <div style="font-size:38px;margin-bottom:11px">🗑️</div>
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:7px">Delete Vehicle?</h3>
+    <p style="font-size:12px;color:#64748b;margin-bottom:5px">You are about to delete:</p>
+    <p id="dn" style="font-weight:700;color:#14b8a6;margin-bottom:11px;font-size:13.5px"></p>
+    <p style="font-size:11.5px;color:#475569;margin-bottom:18px">This action cannot be undone.</p>
+    <div style="display:flex;gap:9px">
+      <button class="mbtn danger" onclick="confirmDel()">Yes, Delete</button>
+      <button class="mbtn cancel" onclick="closeDel()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ADD / EDIT MODAL ═══ -->
+<div class="mo fm" id="fm">
+  <div class="mb">
+    <h3 style="font-size:17px;font-weight:700;margin-bottom:4px" id="fmTitle">Add Vehicle</h3>
+    <p style="font-size:11.5px;color:#475569;margin-bottom:18px">Fill in the vehicle details below</p>
+    <input type="hidden" id="fm-id">
+    <div class="fm-grid">
+      <div class="form-group fm-full">
+        <label>Vehicle Type *</label>
+        <select class="fin" id="fm-type">
+          <option value="Car">Car</option>
+          <option value="Motorcycle">Motorcycle</option>
+          <option value="Truck">Truck</option>
+          <option value="Van">Van</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Make *</label>
+        <input class="fin" id="fm-make" placeholder="e.g. Toyota">
+      </div>
+      <div class="form-group">
+        <label>Model *</label>
+        <input class="fin" id="fm-model" placeholder="e.g. Camry">
+      </div>
+      <div class="form-group">
+        <label>Year *</label>
+        <input class="fin" type="number" id="fm-year" placeholder="2024" min="1990" max="2030">
+      </div>
+      <div class="form-group">
+        <label>Mileage (km)</label>
+        <input class="fin" type="number" id="fm-mileage" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>VIN *</label>
+        <input class="fin" id="fm-vin" placeholder="17-char VIN" style="font-family:monospace">
+      </div>
+      <div class="form-group">
+        <label>License Plate *</label>
+        <input class="fin" id="fm-plate" placeholder="e.g. ABC-1234">
+      </div>
+      <div class="form-group">
+        <label>Owner Name</label>
+        <input class="fin" id="fm-owner" placeholder="Owner full name">
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select class="fin" id="fm-status">
+          <option value="Active">Active</option>
+          <option value="Service Due">Service Due</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:flex;gap:9px;margin-top:6px">
+      <button class="mbtn danger" style="background:linear-gradient(135deg,#14b8a6,#0d9488)" onclick="saveVehicle()">
+        <span id="fmSaveLbl">💾 Save Vehicle</span>
+      </button>
+      <button class="mbtn cancel" onclick="closeFm()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════ */
+const API = 'http://localhost:8081/api/vehicles';
+const CUSTOMER_ID = 1; // hardcoded demo customer
+
+/* ═══════════════════════════════════════
+   PARTICLES
+═══════════════════════════════════════ */
+(function(){
+  const icons=['🔧','🛠️','🚗','🏍️','⚙️','🔩','🪛'];
+  const w=document.getElementById('ptcls');
+  for(let i=0;i<28;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    p.textContent=icons[i%icons.length];
+    const dur=18+Math.random()*22,del=Math.random()*24;
+    p.style.cssText=`left:${Math.random()*100}vw;font-size:${0.7+Math.random()*0.75}rem;animation-duration:${dur}s;animation-delay:-${del}s`;
+    w.appendChild(p);
+  }
+})();
+
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+let vehicles = [];
+let filtered  = [];
+let currentView = 'grid';
+let delId = null;
+let editId = null;
+
+/* ═══════════════════════════════════════
+   API HELPERS
+═══════════════════════════════════════ */
+async function apiFetch(url, opts={}) {
+  const r = await fetch(url, {
+    headers: { 'Content-Type': 'application/json', ...opts.headers },
+    ...opts
+  });
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.status === 204 ? null : r.json();
+}
+
+/* ═══════════════════════════════════════
+   LOAD VEHICLES FROM BACKEND
+═══════════════════════════════════════ */
+async function loadVehicles() {
+  try {
+    vehicles = await apiFetch(`${API}/customer/${CUSTOMER_ID}`);
+    setApiStatus(true);
+  } catch(e) {
+    console.warn('Backend offline, using demo data', e);
+    setApiStatus(false);
+    vehicles = getDemoVehicles();
+  }
+  filtered = [...vehicles];
+  render();
+  updateStats();
+  updateReminder();
+  updateNav();
+}
+
+function getDemoVehicles() {
+  return [
+    { id:1, vehicleType:'Car', make:'Toyota', model:'Camry', year:2020, mileage:45000, vin:'4T1C11AK4LU123456', licensePlate:'ABC-1234', ownerName:'Kaviska Pathum', status:'Active', nextService:'Oil Change & Filter', nextServiceKm:2000, nextServiceDays:45, serviceProgress:70 },
+    { id:2, vehicleType:'Motorcycle', make:'Honda', model:'CBR 500R', year:2021, mileage:18500, vin:'MH1PC5600MK123789', licensePlate:'XYZ-5678', ownerName:'Kaviska Pathum', status:'Service Due', nextService:'Chain Lubrication', nextServiceKm:500, nextServiceDays:10, serviceProgress:90 }
+  ];
+}
+
+/* ═══════════════════════════════════════
+   RENDER
+═══════════════════════════════════════ */
+function render() {
+  renderGrid();
+  renderList();
+  const empty = document.getElementById('emptyState');
+  empty.style.display = filtered.length === 0 ? 'block' : 'none';
+  document.getElementById('pgRow').style.display = filtered.length > 0 ? 'flex' : 'none';
+}
+
+const typeIcon = { Car:'🚗', Motorcycle:'🏍️', Truck:'🚛', Van:'🚐' };
+const typeCls  = { Car:'car', Motorcycle:'moto', Truck:'truck', Van:'van' };
+
+function renderGrid() {
+  const gv = document.getElementById('gv');
+  gv.innerHTML = '';
+  filtered.forEach((v,i) => {
+    const isActive = v.status === 'Active';
+    const sprogress = v.serviceProgress || 50;
+    const progCls   = isActive ? 't' : 'a';
+    const svcKm     = v.nextServiceKm  || '–';
+    const svcDays   = v.nextServiceDays || '–';
+    const svcLabel  = v.nextService || 'Scheduled Service';
+
+    const card = document.createElement('div');
+    card.className = 'vc';
+    card.style.animationDelay = `${0.1 + i*0.1}s`;
+    card.dataset.type   = v.vehicleType;
+    card.dataset.status = v.status;
+    card.dataset.q      = `${v.make} ${v.model} ${v.licensePlate} ${v.vin}`.toLowerCase();
+
+    card.innerHTML = `
+      <div class="ct">
+        <span class="tb ${typeCls[v.vehicleType]||'car'}">${v.vehicleType}</span>
+        <span class="sp ${isActive?'act':'due'}"><span class="dot"></span>${v.status}</span>
+      </div>
+      <span class="ci">${typeIcon[v.vehicleType]||'🚗'}</span>
+      <div class="nr"><span class="cn">${v.make} ${v.model}</span><span class="yt">${v.year}</span></div>
+      <div><span class="pt">${v.licensePlate}</span></div>
+      <div class="mr">
+        <div class="mi"><p>🔑 VIN</p><p class="mn">${(v.vin||'').slice(0,11)}</p></div>
+        <div class="mi"><p>🕐 Mileage</p><p>${(v.mileage||0).toLocaleString()} km</p></div>
+        <div class="mi"><p>👤 Owner</p><p>${v.ownerName||'–'}</p></div>
+      </div>
+      <div class="sb">
+        <div class="sr">
+          <div class="sic ${isActive?'t':'a'}">🔧</div>
+          <div class="sv"><p>Next Service</p><p>${svcLabel}</p></div>
+          <div class="sd ${isActive?'t':'a'}"><p>In ${svcKm} km</p><p>or ${svcDays} days</p></div>
+        </div>
+        <div class="pt2"><div class="pf ${progCls}" style="width:0" data-w="${sprogress}"></div></div>
+      </div>
+      <div class="ca">
+        <button class="ab view" onclick="viewDetails(${v.id})">View Details</button>
+        <button class="ab edit" onclick="openEditModal(${v.id})"><i class="fa fa-pencil" style="font-size:10px"></i> Edit</button>
+        <button class="ab del" onclick="openDel(${v.id},'${v.make} ${v.model}')"><i class="fa fa-trash" style="font-size:10px"></i> Delete</button>
+      </div>`;
+    gv.appendChild(card);
+  });
+
+  // Animate progress bars
+  setTimeout(() => {
+    document.querySelectorAll('.pf[data-w]').forEach(el => { el.style.width = el.dataset.w + '%'; });
+  }, 700);
+}
+
+function renderList() {
+  const lv = document.getElementById('lv');
+  lv.innerHTML = '';
+  filtered.forEach((v,i) => {
+    const row = document.createElement('div');
+    row.className = 'lr';
+    row.style.animationDelay = `${0.05 + i*0.07}s`;
+    const isActive = v.status === 'Active';
+    row.innerHTML = `
+      <span style="font-size:26px">${typeIcon[v.vehicleType]||'🚗'}</span>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:7px">
+          <span style="font-weight:700;font-size:13.5px">${v.make} ${v.model}</span>
+          <span class="yt">${v.year}</span>
+          <span class="tb ${typeCls[v.vehicleType]||'car'}">${v.vehicleType}</span>
+        </div>
+        <p style="font-size:11.5px;color:#475569;margin-top:2px">${v.licensePlate} · ${(v.mileage||0).toLocaleString()} km</p>
+      </div>
+      <span class="sp ${isActive?'act':'due'}"><span class="dot"></span>${v.status}</span>
+      <div style="display:flex;gap:5px">
+        <button class="ab edit" style="padding:6px 10px" onclick="openEditModal(${v.id})" title="Edit"><i class="fa fa-pencil" style="font-size:10px"></i></button>
+        <button class="ab del"  style="padding:6px 10px" onclick="openDel(${v.id},'${v.make} ${v.model}')" title="Delete"><i class="fa fa-trash" style="font-size:10px"></i></button>
+      </div>`;
+    lv.appendChild(row);
+  });
+}
+
+function updateStats() {
+  document.getElementById('st-total').textContent    = vehicles.length;
+  document.getElementById('st-due').textContent      = vehicles.filter(v=>v.status==='Service Due').length;
+  document.getElementById('st-upcoming').textContent = vehicles.filter(v=>v.status==='Active').length;
+  document.getElementById('st-done').textContent     = vehicles.length * 6; // mock
+}
+
+function updateReminder() {
+  const due = vehicles.filter(v=>v.status==='Service Due');
+  const banner = document.getElementById('reminderBanner');
+  if(due.length){
+    const v = due[0];
+    banner.style.display = 'flex';
+    document.getElementById('reminderText').innerHTML =
+      `Your <strong>${v.make} ${v.model}</strong> is due for service in <span style="color:#fbbf24;font-weight:700">${v.nextServiceDays||'–'} days</span>`;
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+function updateNav() {
+  document.getElementById('navCount').textContent    = vehicles.length;
+  document.getElementById('notifBadge').textContent  = vehicles.filter(v=>v.status==='Service Due').length;
+}
+
+function updateRecommendation() {
+  if(!vehicles.length){ return; }
+  const v = vehicles[0];
+  const isDue = v.status === 'Service Due';
+  document.getElementById('recIcon').textContent  = typeIcon[v.vehicleType]||'🚗';
+  document.getElementById('recSub').textContent   = `Your ${v.make} ${v.model} is`;
+  document.getElementById('recTitle').textContent = isDue ? 'Service Needed!' : 'Good to go!';
+  document.getElementById('recBody').textContent  = isDue
+    ? 'Schedule a service soon to keep your vehicle in top shape.'
+    : 'Regular maintenance keeps your engine healthy and fuel-efficient.';
+}
+
+/* ═══════════════════════════════════════
+   FILTER
+═══════════════════════════════════════ */
+function filterVehicles() {
+  const q  = (document.getElementById('vSrch').value + ' ' + document.getElementById('topSrch').value).toLowerCase().trim();
+  const tp = document.getElementById('tFilter').value;
+  const st = document.getElementById('sFilter').value;
+  filtered = vehicles.filter(v => {
+    const vq = `${v.make} ${v.model} ${v.licensePlate} ${v.vin}`.toLowerCase();
+    return (!q || vq.includes(q)) && (!tp || v.vehicleType===tp) && (!st || v.status===st);
+  });
+  render();
+}
+
+/* ═══════════════════════════════════════
+   VIEW TOGGLE
+═══════════════════════════════════════ */
+function setView(v) {
+  currentView = v;
+  const g = v==='grid';
+  document.getElementById('gv').style.display = g ? 'grid' : 'none';
+  document.getElementById('lv').style.display = g ? 'none' : 'flex';
+  document.getElementById('gbtn').className = 'vb' + (g?' on':'');
+  document.getElementById('lbtn').className = 'vb' + (!g?' on':'');
+}
+
+/* ═══════════════════════════════════════
+   PAGINATION (simple stub)
+═══════════════════════════════════════ */
+function changePage(d) { /* extend for real pagination */ }
+
+/* ═══════════════════════════════════════
+   VIEW DETAILS
+═══════════════════════════════════════ */
+function viewDetails(id) {
+  const v = vehicles.find(x=>x.id===id);
+  if(!v) return;
+  showToast(`📋 ${v.make} ${v.model} (${v.year}) – ${v.licensePlate}`, false, 4000);
+}
+
+/* ═══════════════════════════════════════
+   DELETE
+═══════════════════════════════════════ */
+function openDel(id, name) {
+  delId = id;
+  document.getElementById('dn').textContent = name;
+  document.getElementById('dm').classList.add('open');
+}
+function closeDel() { document.getElementById('dm').classList.remove('open'); }
+async function confirmDel() {
+  closeDel();
+  try {
+    await apiFetch(`${API}/${delId}`, { method: 'DELETE' });
+    vehicles = vehicles.filter(v=>v.id!==delId);
+    filtered = filtered.filter(v=>v.id!==delId);
+    render(); updateStats(); updateReminder(); updateNav();
+    showToast('✅ Vehicle deleted successfully!');
+  } catch(e) {
+    // Demo mode fallback
+    vehicles = vehicles.filter(v=>v.id!==delId);
+    filtered = filtered.filter(v=>v.id!==delId);
+    render(); updateStats(); updateReminder(); updateNav();
+    showToast('✅ Vehicle deleted! (demo mode)');
+  }
+}
+
+/* ═══════════════════════════════════════
+   ADD / EDIT MODAL
+═══════════════════════════════════════ */
+function openAddModal() {
+  editId = null;
+  document.getElementById('fmTitle').textContent = 'Add Vehicle';
+  document.getElementById('fmSaveLbl').textContent = '💾 Save Vehicle';
+  clearForm();
+  document.getElementById('fm').classList.add('open');
+}
+
+function openEditModal(id) {
+  const v = vehicles.find(x=>x.id===id);
+  if(!v) return;
+  editId = id;
+  document.getElementById('fmTitle').textContent = `Edit – ${v.make} ${v.model}`;
+  document.getElementById('fmSaveLbl').textContent = '✏️ Update Vehicle';
+  document.getElementById('fm-id').value       = v.id;
+  document.getElementById('fm-type').value     = v.vehicleType;
+  document.getElementById('fm-make').value     = v.make;
+  document.getElementById('fm-model').value    = v.model;
+  document.getElementById('fm-year').value     = v.year;
+  document.getElementById('fm-mileage').value  = v.mileage||0;
+  document.getElementById('fm-vin').value      = v.vin||'';
+  document.getElementById('fm-plate').value    = v.licensePlate||'';
+  document.getElementById('fm-owner').value    = v.ownerName||'';
+  document.getElementById('fm-status').value   = v.status;
+  document.getElementById('fm').classList.add('open');
+}
+
+function closeFm() { document.getElementById('fm').classList.remove('open'); }
+
+function clearForm() {
+  ['fm-id','fm-make','fm-model','fm-vin','fm-plate','fm-owner'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('fm-type').value   = 'Car';
+  document.getElementById('fm-year').value   = new Date().getFullYear();
+  document.getElementById('fm-mileage').value= 0;
+  document.getElementById('fm-status').value = 'Active';
+}
+
+async function saveVehicle() {
+  const payload = {
+    vehicleType:  document.getElementById('fm-type').value,
+    make:         document.getElementById('fm-make').value.trim(),
+    model:        document.getElementById('fm-model').value.trim(),
+    year:         parseInt(document.getElementById('fm-year').value)||2024,
+    mileage:      parseInt(document.getElementById('fm-mileage').value)||0,
+    vin:          document.getElementById('fm-vin').value.trim(),
+    licensePlate: document.getElementById('fm-plate').value.trim(),
+    ownerName:    document.getElementById('fm-owner').value.trim(),
+    status:       document.getElementById('fm-status').value,
+    customerId:   CUSTOMER_ID
+  };
+
+  if(!payload.make || !payload.model) { showToast('❌ Make and Model are required!', true); return; }
+
+  try {
+    if(editId) {
+      const updated = await apiFetch(`${API}/${editId}`, { method:'PUT', body: JSON.stringify(payload) });
+      const idx = vehicles.findIndex(v=>v.id===editId);
+      if(idx>=0) vehicles[idx] = { ...vehicles[idx], ...updated };
+      showToast('✅ Vehicle updated successfully!');
+    } else {
+      const created = await apiFetch(API, { method:'POST', body: JSON.stringify(payload) });
+      vehicles.push(created);
+      showToast('✅ Vehicle added successfully!');
+    }
+  } catch(e) {
+    // Demo mode fallback
+    if(editId) {
+      const idx = vehicles.findIndex(v=>v.id===editId);
+      if(idx>=0) vehicles[idx] = { ...vehicles[idx], ...payload };
+      showToast('✅ Vehicle updated! (demo mode)');
+    } else {
+      const newV = { ...payload, id: Date.now(), serviceProgress:30, nextService:'Scheduled Service', nextServiceKm:5000, nextServiceDays:90 };
+      vehicles.push(newV);
+      showToast('✅ Vehicle added! (demo mode)');
+    }
+  }
+
+  closeFm();
+  filtered = [...vehicles];
+  render(); updateStats(); updateReminder(); updateNav(); updateRecommendation();
+}
+
+/* ═══════════════════════════════════════
+   QUICK ADD (right panel)
+═══════════════════════════════════════ */
+async function quickAdd() {
+  const payload = {
+    vehicleType:  document.getElementById('qa-type').value,
+    make:         document.getElementById('qa-make').value.trim(),
+    model:        document.getElementById('qa-model').value.trim(),
+    year:         parseInt(document.getElementById('qa-year').value)||2024,
+    mileage:      parseInt(document.getElementById('qa-mileage').value)||0,
+    vin:          document.getElementById('qa-vin').value.trim(),
+    licensePlate: document.getElementById('qa-plate').value.trim(),
+    ownerName:    'Kaviska Pathum',
+    status:       'Active',
+    customerId:   CUSTOMER_ID
+  };
+  if(!payload.make || !payload.model) { showToast('❌ Make & Model required!', true); return; }
+
+  try {
+    const created = await apiFetch(API, { method:'POST', body: JSON.stringify(payload) });
+    vehicles.push(created);
+    showToast('✅ Vehicle added!');
+  } catch {
+    vehicles.push({ ...payload, id:Date.now(), serviceProgress:20, nextService:'Initial Service', nextServiceKm:5000, nextServiceDays:180 });
+    showToast('✅ Vehicle added! (demo mode)');
+  }
+
+  // clear quick-add
+  ['qa-make','qa-model','qa-year','qa-mileage','qa-vin','qa-plate'].forEach(id=>{ document.getElementById(id).value=''; });
+  filtered=[...vehicles];
+  render(); updateStats(); updateReminder(); updateNav(); updateRecommendation();
+}
+
+/* ═══════════════════════════════════════
+   API STATUS
+═══════════════════════════════════════ */
+function setApiStatus(live) {
+  const dot = document.getElementById('apiDot');
+  const lbl = document.getElementById('apiLbl');
+  dot.className = 'api-dot ' + (live ? 'live' : 'err');
+  lbl.textContent = live ? 'Backend Connected' : 'Demo Mode';
+}
+
+/* ═══════════════════════════════════════
+   TOAST
+═══════════════════════════════════════ */
+function showToast(msg, err=false, dur=3000) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast '+(err?'err':'ok');
+  requestAnimationFrame(()=>t.classList.add('show'));
+  setTimeout(()=>t.classList.remove('show'), dur);
+}
+
+/* ═══════════════════════════════════════
+   MISC
+═══════════════════════════════════════ */
+function go(url) { location.href=url; }
+function logout() { location.href='index.html'; }
+
+// Close modals on backdrop click
+document.getElementById('dm').addEventListener('click', e=>{ if(e.target===document.getElementById('dm')) closeDel(); });
+document.getElementById('fm').addEventListener('click', e=>{ if(e.target===document.getElementById('fm')) closeFm(); });
+
+// Boot
+loadVehicles().then(updateRecommendation);
+</script>
+</body>
+</html>
