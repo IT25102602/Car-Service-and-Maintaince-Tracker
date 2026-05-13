@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Reviews | CarService Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0F172A; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .teal-gradient { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen flex">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-[#1E2937] border-r border-slate-800 flex flex-col fixed h-full">
+        <div class="p-6 flex items-center gap-3 border-b border-slate-800">
+            <div class="w-10 h-10 teal-gradient rounded-xl flex items-center justify-center text-white text-xl">
+                <i class="fa fa-car-side"></i>
+            </div>
+            <h1 class="text-xl font-bold text-white tracking-tight">CarService</h1>
+        </div>
+        <nav class="flex-1 px-4 py-8 space-y-2">
+            <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                <i class="fa fa-chart-pie w-5"></i> <span>Dashboard</span>
+            </a>
+            <a href="feedback.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                <i class="fa fa-pen-nib w-5"></i> <span>Submit Feedback</span>
+            </a>
+            <a href="reviews.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20">
+                <i class="fa fa-star w-5"></i> <span>Reviews</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 ml-64 p-10">
+        <header class="flex justify-between items-center mb-10">
+            <div>
+                <h1 class="text-3xl font-bold text-white">Customer Reviews</h1>
+                <p class="text-slate-500">Real feedback from our valued customers.</p>
+            </div>
+            <div class="flex gap-4">
+                <select id="ratingFilter" onchange="loadReviews()" class="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2 text-sm text-slate-400 outline-none focus:border-teal-500">
+                    <option value="">All Ratings</option>
+                    <option value="5">5 Stars</option>
+                    <option value="4">4 Stars</option>
+                    <option value="3">3 Stars</option>
+                    <option value="2">2 Stars</option>
+                    <option value="1">1 Star</option>
+                </select>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="reviewsContainer">
+            <!-- Populated via JS -->
+        </div>
+
+        <div id="reviewsEmptyState" class="hidden text-center py-20">
+            <i class="fa fa-comment-slash text-5xl text-slate-700 mb-4"></i>
+            <p class="text-slate-500">No reviews found matching your criteria.</p>
+        </div>
+    </main>
+
+    <script src="js/api.js"></script>
+    <script src="js/reviews.js"></script>
+</body>
+</html>

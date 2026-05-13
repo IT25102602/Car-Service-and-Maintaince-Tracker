@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Feedback | CarService Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0F172A; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .teal-gradient { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen flex">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-[#1E2937] border-r border-slate-800 flex flex-col fixed h-full">
+        <div class="p-6 flex items-center gap-3 border-b border-slate-800">
+            <div class="w-10 h-10 teal-gradient rounded-xl flex items-center justify-center text-white text-xl">
+                <i class="fa fa-car-side"></i>
+            </div>
+            <h1 class="text-xl font-bold text-white tracking-tight">CarService</h1>
+        </div>
+        <nav class="flex-1 px-4 py-8 space-y-2">
+            <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                <i class="fa fa-chart-pie w-5"></i> <span>Dashboard</span>
+            </a>
+            <a href="feedback.html" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20">
+                <i class="fa fa-pen-nib w-5"></i> <span>Submit Feedback</span>
+            </a>
+            <a href="reviews.html" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
+                <i class="fa fa-star w-5"></i> <span>Reviews</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 ml-64 p-10 flex items-center justify-center">
+        <div class="glass-card w-full max-w-xl p-10 rounded-[40px] shadow-2xl">
+            <h2 class="text-3xl font-bold text-white mb-2 text-center">Share Your Experience</h2>
+            <p class="text-slate-500 text-center mb-10">Your feedback helps us provide the best car care.</p>
+            
+            <form id="feedbackForm" class="space-y-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Service ID</label>
+                    <input type="text" id="serviceId" placeholder="e.g. S1001" class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-sm focus:border-teal-500/50 outline-none transition-all" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Rating</label>
+                    <div class="flex gap-2 text-3xl text-slate-700" id="starContainer">
+                        <i class="fa fa-star cursor-pointer hover:text-teal-400" data-val="1"></i>
+                        <i class="fa fa-star cursor-pointer hover:text-teal-400" data-val="2"></i>
+                        <i class="fa fa-star cursor-pointer hover:text-teal-400" data-val="3"></i>
+                        <i class="fa fa-star cursor-pointer hover:text-teal-400" data-val="4"></i>
+                        <i class="fa fa-star cursor-pointer hover:text-teal-400" data-val="5"></i>
+                    </div>
+                    <input type="hidden" id="ratingValue" value="0">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Comments</label>
+                    <textarea id="reviewMessage" rows="4" placeholder="Tell us more..." class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-sm focus:border-teal-500/50 outline-none transition-all resize-none" required></textarea>
+                </div>
+                <button type="submit" class="w-full teal-gradient text-white font-bold py-4 rounded-2xl shadow-xl shadow-teal-500/20 hover:scale-[1.01] transition-all">Submit Feedback</button>
+            </form>
+        </div>
+    </main>
+
+    <div id="toast" class="fixed bottom-10 right-10 hidden glass-card px-8 py-4 rounded-2xl border-l-4 border-teal-500">
+        <p id="toastMsg" class="text-white font-medium"></p>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/feedback.js"></script>
+    <script>
+        // Inline star logic for this page
+        const stars = document.querySelectorAll('#starContainer i');
+        stars.forEach(s => {
+            s.onclick = () => {
+                const val = s.getAttribute('data-val');
+                document.getElementById('ratingValue').value = val;
+                stars.forEach(star => {
+                    star.classList.toggle('text-teal-500', star.getAttribute('data-val') <= val);
+                    star.classList.toggle('fa-solid', star.getAttribute('data-val') <= val);
+                    star.classList.toggle('fa-regular', star.getAttribute('data-val') > val);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
