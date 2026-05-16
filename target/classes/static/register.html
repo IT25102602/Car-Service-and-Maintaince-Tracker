@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Create Account - CarService Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Inter,sans-serif;background:#0d1b2a;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.brand{text-align:center;margin-bottom:24px}
+.brand-icon{width:56px;height:56px;background:linear-gradient(135deg,#14b8a6,#0d9488);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;box-shadow:0 8px 28px rgba(20,184,166,.28)}
+.brand-icon svg{width:28px;height:28px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.brand h1{font-size:1.4rem;font-weight:700;color:#fff;margin-bottom:4px;letter-spacing:-.02em}
+.brand p{font-size:.8rem;color:#5a7a96}
+.card{background:#13243a;border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:32px 30px;width:100%;max-width:500px;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.card-title{font-size:1.1rem;font-weight:600;color:#fff;text-align:center;margin-bottom:5px}
+.card-sub{font-size:.82rem;color:#5a7a96;text-align:center;margin-bottom:24px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:.78rem;font-weight:500;color:#e2e8f0;margin-bottom:7px}
+.input-box{position:relative}
+.input-box input,.input-box textarea{width:100%;background:#0f2035;border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:11px 14px;color:#e2e8f0;font-size:.87rem;font-family:Inter,sans-serif;outline:none;transition:all .2s ease}
+.input-box input::placeholder,.input-box textarea::placeholder{color:#334d63}
+.input-box input:focus,.input-box textarea:focus{border-color:#14b8a6;box-shadow:0 0 0 3px rgba(20,184,166,.12)}
+.input-box textarea{resize:none;height:72px}
+.eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#5a7a96;cursor:pointer;display:flex;align-items:center;padding:2px;transition:.2s}
+.eye-btn:hover{color:#94a3b8}
+.eye-btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.strength-bar{height:3px;border-radius:2px;margin-top:6px;background:#1a2d40;overflow:hidden;display:none}
+.strength-fill{height:100%;border-radius:2px;transition:.3s;width:0}
+.strength-txt{font-size:.7rem;margin-top:4px;display:none}
+.terms{display:flex;align-items:flex-start;gap:10px;margin-bottom:20px;cursor:pointer}
+.terms input[type=checkbox]{width:16px;height:16px;accent-color:#14b8a6;margin-top:2px;flex-shrink:0;cursor:pointer}
+.terms span{font-size:.8rem;color:#5a7a96;line-height:1.5}
+.terms a{color:#14b8a6}
+.btn-register{width:100%;padding:13px;background:linear-gradient(135deg,#14b8a6,#0d9488);border:none;border-radius:10px;color:#0d1b2a;font-size:.92rem;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.02em;transition:all .2s ease;margin-bottom:18px}
+.btn-register:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(20,184,166,.38)}
+.btn-register:active{transform:translateY(0)}
+.btn-register:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.login-link{text-align:center;font-size:.82rem;color:#5a7a96}
+.login-link a{color:#14b8a6;text-decoration:none;font-weight:500}
+.login-link a:hover{text-decoration:underline}
+.divider{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07)}
+.divider span{font-size:.75rem;color:#2e4a63}
+.toast{position:fixed;top:20px;right:20px;background:#13243a;border:1px solid;border-radius:10px;padding:12px 20px;font-size:.83rem;font-weight:500;opacity:0;transform:translateY(-8px);transition:.25s;pointer-events:none;z-index:99}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.success{border-color:#34d399;color:#34d399}
+.toast.error{border-color:#f87171;color:#f87171}
+/* Loading spinner overlay */
+.spinner-overlay{display:none;position:fixed;inset:0;background:rgba(13,27,42,.7);backdrop-filter:blur(4px);z-index:998;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.spinner-overlay.show{display:flex}
+.spinner{width:40px;height:40px;border:3px solid rgba(20,184,166,.2);border-top-color:#14b8a6;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner-txt{color:#e2e8f0;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="brand">
+  <div class="brand-icon">
+    <svg viewBox="0 0 24 24"><path d="M5 17H3a2 2 0 01-2-2V9a2 2 0 012-2h2"/><path d="M19 17h2a2 2 0 002-2V9a2 2 0 00-2-2h-2"/><rect x="5" y="7" width="14" height="10" rx="2"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/><path d="M5 12h14"/></svg>
+  </div>
+  <h1>CarService Tracker</h1>
+  <p>Professional Car Service Management</p>
+</div>
+
+<div class="card">
+  <div class="card-title">Create Your Account</div>
+  <div class="card-sub">Join CarService Tracker and manage your vehicles with ease</div>
+
+  <!-- NAME ROW -->
+  <div class="form-row">
+    <div class="field">
+      <label>First Name <span style="color:#f87171">*</span></label>
+      <div class="input-box"><input type="text" id="firstName" placeholder="John" autocomplete="given-name"></div>
+    </div>
+    <div class="field">
+      <label>Last Name <span style="color:#f87171">*</span></label>
+      <div class="input-box"><input type="text" id="lastName" placeholder="Doe" autocomplete="family-name"></div>
+    </div>
+  </div>
+
+  <!-- EMAIL -->
+  <div class="field">
+    <label>Email Address <span style="color:#f87171">*</span></label>
+    <div class="input-box"><input type="email" id="email" placeholder="john@email.com" autocomplete="email" oninput="clearErr('email')"></div>
+  </div>
+
+  <!-- PHONE -->
+  <div class="field">
+    <label>Phone Number <span style="color:#f87171">*</span></label>
+    <div class="input-box"><input type="tel" id="phone" placeholder="+94 77 123 4567" autocomplete="tel"></div>
+  </div>
+
+  <!-- ADDRESS -->
+  <div class="field">
+    <label>Address</label>
+    <div class="input-box"><textarea id="address" placeholder="123 Main Street, Colombo..."></textarea></div>
+  </div>
+
+  <div class="divider"><span>Security</span></div>
+
+  <!-- PASSWORD -->
+  <div class="field">
+    <label>Password <span style="color:#f87171">*</span></label>
+    <div class="input-box">
+      <input type="password" id="password" placeholder="Create a strong password" autocomplete="new-password" oninput="checkStrength(this.value)">
+      <button class="eye-btn" type="button" onclick="togglePwd('password')">
+        <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+    <div class="strength-bar" id="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+    <div class="strength-txt" id="strength-txt"></div>
+  </div>
+
+  <!-- CONFIRM PASSWORD -->
+  <div class="field">
+    <label>Confirm Password <span style="color:#f87171">*</span></label>
+    <div class="input-box">
+      <input type="password" id="confirmPassword" placeholder="Repeat your password" autocomplete="new-password">
+      <button class="eye-btn" type="button" onclick="togglePwd('confirmPassword')">
+        <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- TERMS -->
+  <label class="terms">
+    <input type="checkbox" id="terms">
+    <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+  </label>
+
+  <button class="btn-register" id="reg-btn" onclick="register()">Create Account</button>
+  <div class="login-link">Already have an account? <a href="index.html">Sign in here</a></div>
+</div>
+
+<!-- LOADING OVERLAY -->
+<div class="spinner-overlay" id="spinner">
+  <div class="spinner"></div>
+  <div class="spinner-txt">Creating your account...</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+function togglePwd(id) {
+  const inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+function showToast(msg, type='error') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+function clearErr(id) { document.getElementById(id).style.borderColor = ''; }
+function checkStrength(val) {
+  const bar = document.getElementById('strength-bar');
+  const fill = document.getElementById('strength-fill');
+  const txt = document.getElementById('strength-txt');
+  bar.style.display = fill.style.display = txt.style.display = val ? 'block' : 'none';
+  let score = 0;
+  if(val.length >= 8) score++;
+  if(/[A-Z]/.test(val)) score++;
+  if(/[0-9]/.test(val)) score++;
+  if(/[^A-Za-z0-9]/.test(val)) score++;
+  const levels = [{w:'25%',c:'#f87171',l:'Weak'},{w:'50%',c:'#fbbf24',l:'Fair'},{w:'75%',c:'#60a5fa',l:'Good'},{w:'100%',c:'#34d399',l:'Strong'}];
+  const lvl = levels[Math.min(score-1,3)] || levels[0];
+  fill.style.width = lvl.w; fill.style.background = lvl.c;
+  txt.textContent = lvl.l; txt.style.color = lvl.c;
+}
+function validate() {
+  const fn = document.getElementById('firstName').value.trim();
+  const ln = document.getElementById('lastName').value.trim();
+  const em = document.getElementById('email').value.trim();
+  const ph = document.getElementById('phone').value.trim();
+  const pw = document.getElementById('password').value;
+  const cp = document.getElementById('confirmPassword').value;
+  const tc = document.getElementById('terms').checked;
+  if(!fn) { showToast('Please enter your first name'); return false; }
+  if(!ln) { showToast('Please enter your last name'); return false; }
+  if(!em || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { showToast('Please enter a valid email address'); return false; }
+  if(!ph) { showToast('Please enter your phone number'); return false; }
+  if(!pw || pw.length < 6) { showToast('Password must be at least 6 characters'); return false; }
+  if(pw !== cp) { showToast('Passwords do not match'); return false; }
+  if(!tc) { showToast('Please accept the Terms of Service'); return false; }
+  return true;
+}
+async function register() {
+  if(!validate()) return;
+  const body = {
+    firstName: document.getElementById('firstName').value.trim(),
+    lastName:  document.getElementById('lastName').value.trim(),
+    email:     document.getElementById('email').value.trim(),
+    phone:     document.getElementById('phone').value.trim(),
+    address:   document.getElementById('address').value.trim()
+  };
+  document.getElementById('spinner').classList.add('show');
+  document.getElementById('reg-btn').disabled = true;
+  try {
+    const res = await fetch('/api/customers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if(res.ok) {
+      const customer = await res.json();
+      showToast('Account created successfully! Redirecting...', 'success');
+      setTimeout(() => window.location.href = '/customer.html', 1500);
+    } else {
+      const err = await res.json().catch(() => ({}));
+      showToast(err.message || 'Registration failed. Email may already be in use.');
+      document.getElementById('reg-btn').disabled = false;
+    }
+  } catch(e) {
+    showToast('Cannot connect to server. Please try again.');
+    document.getElementById('reg-btn').disabled = false;
+  } finally {
+    document.getElementById('spinner').classList.remove('show');
+  }
+}
+document.addEventListener('keydown', e => { if(e.key === 'Enter') register(); });
+</script>
+</body>
+</html>
